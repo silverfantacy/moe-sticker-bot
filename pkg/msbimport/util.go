@@ -87,9 +87,7 @@ func httpGetAndroidUA(link string) (string, error) {
 }
 
 func fDownload(link string, savePath string) error {
-	cmd := exec.Command("curl", "-o", savePath, link)
-	_, err := cmd.CombinedOutput()
-	return err
+	return httpDownloadCurlUA(link, savePath)
 }
 
 func fExtract(f string) string {

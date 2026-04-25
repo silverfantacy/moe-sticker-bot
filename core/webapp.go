@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -238,6 +239,9 @@ func commitEmojiChange(ud *UserData, so []webappStickerObject) error {
 	//copy slice
 	ss := ud.stickerData.stickerSet.Stickers
 	for i, s := range so {
+		if i >= len(ss) {
+			return errors.New("webapp result contains out-of-range sticker index")
+		}
 		if s.EmojiChanged {
 			oldEmoji := findEmojis(ss[i].Emoji)
 			newEmoji := findEmojis(s.Emoji)
@@ -266,11 +270,29 @@ func commitEmojiChange(ud *UserData, so []webappStickerObject) error {
 func apiEditMove(c *gin.Context) {
 	uid := c.Query("uid")
 	qid := c.Query("qid")
-	oldIndex, _ := strconv.Atoi(c.PostForm("oldIndex"))
-	newIndex, _ := strconv.Atoi(c.PostForm("newIndex"))
+	oldIndex, err := strconv.Atoi(c.PostForm("oldIndex"))
+	if err != nil {
+		c.String(http.StatusBadRequest, "bad_old_index")
+		return
+	}
+	newIndex, err := strconv.Atoi(c.PostForm("newIndex"))
+	if err != nil {
+		c.String(http.StatusBadRequest, "bad_new_index")
+		return
+	}
 	ud, err := checkGetUd(uid, qid)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	if ud.webAppWorkerPool == nil {
+		c.String(http.StatusBadRequest, "webapp_not_initialized")
+		return
+	}
+	if oldIndex < 0 || newIndex < 0 ||
+		oldIndex >= len(ud.stickerData.stickerSet.Stickers) ||
+		newIndex >= len(ud.stickerData.stickerSet.Stickers) {
+		c.String(http.StatusBadRequest, "index_out_of_range")
 		return
 	}
 	smo := &StickerMoveObject{
@@ -290,14 +312,26 @@ func apiEditMove(c *gin.Context) {
 
 func apiInitData(c *gin.Context) {
 	//We must verify the initData before using it
-	queryID := c.PostForm("query_id")
-	authDate := c.PostForm("auth_date")
-	user := c.PostForm("user")
+	if err := c.Request.ParseForm(); err != nil {
+		c.String(http.StatusBadRequest, "bad_form")
+		return
+	}
 	hash := c.PostForm("hash")
-	dataCheckString := strings.Join([]string{
-		"auth_date=" + authDate,
-		"query_id=" + queryID,
-		"user=" + user}, "\n")
+	if hash == "" {
+		c.String(http.StatusBadRequest, "missing_hash")
+		return
+	}
+	var dataCheckFields []string
+	for key, values := range c.Request.PostForm {
+		if key == "hash" {
+			continue
+		}
+		for _, value := range values {
+			dataCheckFields = append(dataCheckFields, key+"="+value)
+		}
+	}
+	sort.Strings(dataCheckFields)
+	dataCheckString := strings.Join(dataCheckFields, "\n")
 	if !validateHMAC(dataCheckString, hash) {
 		log.Warning("WebApp DCS HMAC failed, corrupt or attack?")
 		c.String(http.StatusBadRequest, "data_check_string HMAC validation failed!!")

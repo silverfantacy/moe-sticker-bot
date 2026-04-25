@@ -1,25 +1,25 @@
-import React, { useEffect, useReducer, useState } from 'react';
-import axios, { all } from 'axios';
-import { sha256sum } from './utils';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 import { StickerGrid } from './StickerGrid'
 import { SortableSticker } from './SortableSticker'
-import { Sticker } from './Sticker'
 
 function Export() {
   const [ss, setSS] = useState([])
   const uid = window.Telegram.WebApp.initDataUnsafe.user.id
   const queryId = window.Telegram.WebApp.initDataUnsafe.query_id
-  const params = new Proxy(new URLSearchParams(window.location.search), {
-    get: (searchParams, prop) => searchParams.get(prop),
-  });
+  const params = new URLSearchParams(window.location.search)
+  const sn = params.get("sn")
+  const hex = params.get("hex")
 
-  const host = process.env.REACT_APP_HOST
-  const exportLinkHttps = `https://${host}/webapp/api/export?dn=${host}&sn=${params.sn}&qid=${queryId}&hex=${params.hex}`
-  const exportLinkMsb = `msb://app/export/${params.sn}/?dn=${host}&qid=${queryId}&hex=${params.hex}`
+  const host = process.env.REACT_APP_HOST || window.location.host
+  const exportParams = new URLSearchParams({ dn: host, sn, qid: queryId, hex })
+  const exportLinkHttps = `https://${host}/webapp/api/export?${exportParams.toString()}`
+  const exportLinkMsb = `msb://app/export/${encodeURIComponent(sn)}/?dn=${encodeURIComponent(host)}&qid=${encodeURIComponent(queryId)}&hex=${encodeURIComponent(hex)}`
 
   useEffect(() => {
-    axios.get(`/webapp/api/ss?sn=${params.sn}&uid=${uid}&qid=${queryId}&hex=${params.hex}&cmd=export`)
+    const ssParams = new URLSearchParams({ sn, uid, qid: queryId, hex, cmd: "export" })
+    axios.get(`/webapp/api/ss?${ssParams.toString()}`)
       .then(res => {
         setSS(res.data.ss)
       })
@@ -36,7 +36,7 @@ function Export() {
           window.open(exportLinkMsb)
         })
     }
-  }, [])
+  }, [exportLinkMsb, hex, queryId, sn, uid])
   return (
 
     <div>

@@ -18,7 +18,7 @@ function App() {
       .catch(err => {
         setIsInitDataValid(false)
       })
-  }, [])
+  }, [qstring, route])
 
   if (isInitDataValid === null) {
     // initData not generated yet.

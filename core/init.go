@@ -147,7 +147,7 @@ func initBot(conf ConfigTemplate) *tele.Bot {
 		// onError will terminate current session and log to terminal.
 		OnError: onError,
 	}
-	log.WithField("token", msbconf.BotToken).Info("Attempting to initialize...")
+	log.Info("Attempting to initialize bot...")
 	b, err := tele.NewBot(pref)
 	if err != nil {
 		log.Fatal(err)
@@ -205,5 +205,5 @@ func initLogrus() {
 	log.SetLevel(level)
 
 	fmt.Printf("Log level is set to: %s\n", log.GetLevel())
-	log.Debug("Warning: Log level below DEBUG might print sensitive information, including passwords.")
+	log.Debug("Warning: DEBUG logs might print sensitive operational information.")
 }

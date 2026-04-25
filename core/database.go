@@ -85,7 +85,7 @@ func initDB(dbname string) error {
 	db.Close()
 	dsn.DBName = dbname
 	db, _ = sql.Open("mysql", dsn.FormatDSN())
-	log.Debugln("DB DSN:", dsn.FormatDSN())
+	log.WithFields(log.Fields{"Addr": addr, "DBName": dbname}).Debug("DB connection configured.")
 
 	var dbVer string
 	err = db.QueryRow("SELECT value FROM properties WHERE name=?", "DB_VER").Scan(&dbVer)
@@ -105,7 +105,7 @@ func initDB(dbname string) error {
 func verifyDB(dsn *mysql.Config, dbname string) error {
 	err := db.Ping()
 	if err != nil {
-		log.Errorln("Error connecting to mariadb!! DSN: ", dsn.FormatDSN())
+		log.Errorln("Error connecting to mariadb:", err)
 		return err
 	}
 
@@ -115,7 +115,7 @@ func verifyDB(dsn *mysql.Config, dbname string) error {
 		log.Infof("Database name:%s does not seem to exist, attempting to create.", dbname)
 		err2 := createMariadb(dsn, dbname)
 		if err2 != nil {
-			log.Errorln("Error creating mariadb database!! DSN:", dsn.FormatDSN())
+			log.Errorln("Error creating mariadb database:", err2)
 			return err2
 		}
 	}
@@ -307,12 +307,14 @@ func searchLineS(keywords []string) []LineStickerQ {
 		return nil
 	}
 	var statements []string
+	var args []interface{}
 	for _, s := range keywords {
-		statements = append(statements, "'%"+s+"%'")
+		statements = append(statements, "tg_title LIKE ?")
+		args = append(args, "%"+s+"%")
 	}
-	statement := strings.Join(statements, " AND tg_title LIKE ")
+	statement := strings.Join(statements, " AND ")
 	log.Debugln("database: search statement:", statement)
-	qs, err := db.Query("SELECT tg_title, tg_id, auto_emoji FROM line WHERE tg_title LIKE " + statement)
+	qs, err := db.Query("SELECT tg_title, tg_id, auto_emoji FROM line WHERE "+statement, args...)
 	if err != nil {
 		log.Warnln("db q err:", err)
 		return nil

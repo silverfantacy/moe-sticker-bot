@@ -1,0 +1,7 @@
+.git
+.github
+**/node_modules
+web/webapp3/build
+*_data
+*.log
+.DS_Store

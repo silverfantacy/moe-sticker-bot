@@ -88,7 +88,7 @@ function Edit() {
     )
   }
   // Reject empty ss.
-  if (items === []) {
+  if (items.length === 0) {
     return (
       <div className="App"><h3>Please launch WebApp through /manage command.</h3>
         <br />
@@ -143,6 +143,10 @@ function Edit() {
 
   function handleDragEnd(event) {
     const { active, over } = event;
+    if (!over) {
+      setActiveId(null);
+      return;
+    }
     if (active.id !== over.id) {
       setItems((items) => {
         const oldIndex = items.map(o => o.id).indexOf(active.id)
@@ -162,8 +166,12 @@ function Edit() {
   }
 
   function setEmoji(id, value) {
-    let newItems = items
+    let newItems = [...items]
     let pos = newItems.map(o => o.id).indexOf(id)
+    if (pos === -1) {
+      return
+    }
+    newItems[pos] = { ...newItems[pos] }
     newItems[pos].emoji = value
     newItems[pos].emoji_changed = true
     setItems(newItems)
