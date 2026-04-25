@@ -1,11 +1,11 @@
-FROM node:22-bookworm-slim AS webapp
+FROM node:24-bookworm-slim AS webapp
 WORKDIR /src/web/webapp3
 COPY web/webapp3/package*.json ./
-RUN npm install
+RUN npm ci
 COPY web/webapp3/ ./
 RUN npm run build
 
-FROM golang:1.23-bookworm AS build
+FROM golang:1.25-bookworm AS build
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip3 install --break-system-packages emoji rlottie-python
 COPY --from=build /out/moe-sticker-bot /usr/local/bin/moe-sticker-bot
 COPY --from=build /out/msbimport /usr/local/bin/msbimport
-COPY --from=webapp /src/web/webapp3/build /webapp
+COPY --from=webapp /src/web/webapp3/dist /webapp
 COPY web/nginx/assetlinks.json /webapp/assetlinks.json
 COPY tools/msb_emoji.py tools/msb_kakao_decrypt.py tools/msb_rlottie.py /usr/local/bin/
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template

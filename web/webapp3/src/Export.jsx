@@ -12,7 +12,7 @@ function Export() {
   const sn = params.get("sn")
   const hex = params.get("hex")
 
-  const host = process.env.REACT_APP_HOST || window.location.host
+  const host = import.meta.env.VITE_HOST || window.location.host
   const exportParams = new URLSearchParams({ dn: host, sn, qid: queryId, hex })
   const exportLinkHttps = `https://${host}/webapp/api/export?${exportParams.toString()}`
   const exportLinkMsb = `msb://app/export/${encodeURIComponent(sn)}/?dn=${encodeURIComponent(host)}&qid=${encodeURIComponent(queryId)}&hex=${encodeURIComponent(hex)}`
