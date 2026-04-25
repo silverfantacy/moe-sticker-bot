@@ -24,7 +24,7 @@ func submitStickerSetAuto(createSet bool, c tele.Context) error {
 	pText, teleMsg, _ := sendProcessStarted(ud, c, "Waiting...")
 	ud.wg.Wait()
 
-	defer cleanUserData(uid)
+	defer cleanUserDataAndDir(uid)
 
 	if len(ud.stickerData.stickers) == 0 {
 		log.Error("No sticker to commit!")

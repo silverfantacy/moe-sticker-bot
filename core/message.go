@@ -536,15 +536,11 @@ func sendFatalError(err error, c tele.Context) {
 func sendExecEmojiAssignFinished(c tele.Context) error {
 	ud := users.data[c.Sender().ID]
 	msg := fmt.Sprintf(`
-LINE Cat: <code>%s</code>
-LINE ID: <code>%s</code>
-TG ID: <code>%s</code>
-TG Title: <a href="%s">%s</a>
+貼圖類型: <code>%s</code>
+Telegram 貼圖包: <a href="%s">%s</a>
 
-Success. 成功完成. /start
-	`, ud.lineData.Category,
-		ud.lineData.Id,
-		ud.stickerData.id,
+Success! 成功完成. /start
+	`, lineStickerCategoryLabel(ud.lineData.Category),
 		"https://t.me/addstickers/"+ud.stickerData.id,
 		escapeTagMark(ud.stickerData.title),
 	)
@@ -560,18 +556,12 @@ func sendProcessStarted(ud *UserData, c tele.Context, optMsg string) (string, *t
 Preparing stickers, please wait...
 正在準備貼圖, 請稍後...
 
-LINE Cat: <code>%s</code>
-LINE ID: <code>%s</code>
-TG ID: <code>%s</code>
-TG TYPE: <code>%s</code>
-TG Title: <a href="%s">%s</a>
+貼圖類型: <code>%s</code>
+Telegram 貼圖包: <a href="%s">%s</a>
 
 <b>Progress / 進展</b>
 <code>%s</code>
-`, ud.lineData.Category,
-		ud.lineData.Id,
-		ud.stickerData.id,
-		ud.stickerData.stickerSetType,
+`, lineStickerCategoryLabel(ud.lineData.Category),
 		"https://t.me/addstickers/"+ud.stickerData.id,
 		escapeTagMark(ud.stickerData.title),
 		optMsg)
@@ -580,6 +570,31 @@ TG Title: <a href="%s">%s</a>
 	teleMsg, err := c.Bot().Send(c.Recipient(), message, tele.ModeHTML)
 	ud.progressMsg = teleMsg
 	return message, teleMsg, err
+}
+
+func lineStickerCategoryLabel(category string) string {
+	switch category {
+	case "line_s":
+		return "LINE 靜態貼圖"
+	case "line_a":
+		return "LINE 動態貼圖"
+	case "line_p":
+		return "LINE 全螢幕貼圖"
+	case "line_f":
+		return "LINE 特效貼圖"
+	case "line_e":
+		return "LINE 靜態表情貼"
+	case "line_i":
+		return "LINE 動態表情貼"
+	case "line_m":
+		return "LINE 訊息貼圖"
+	case "line_n":
+		return "LINE 隨你填貼圖"
+	case "kakao_e":
+		return "Kakao 貼圖"
+	default:
+		return category
+	}
 }
 
 // if progressText is empty, a progress bar will be generated based on cur and total.

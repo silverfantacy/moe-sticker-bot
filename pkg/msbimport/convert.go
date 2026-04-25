@@ -26,6 +26,11 @@ const (
 	FORMAT_TG_EMOJI_ANIMATED   = "tg_emoji_ani"
 )
 
+const (
+	tgStaticStickerMaxSize = 512 * KiB
+	tgVideoStickerMaxSize  = 255 * KiB
+)
+
 // See: http://en.wikipedia.org/wiki/Binary_prefix
 const (
 	// Decimal
@@ -112,7 +117,7 @@ func IMToWebpTGStatic(f string, isCustomEmoji bool) (string, error) {
 	}
 
 	// 100x100 should never exceed 255KIB, no need for extra check.
-	if st.Size() > 255*KiB {
+	if st.Size() > tgStaticStickerMaxSize {
 		args := CONVERT_ARGS
 		args = append(args, "-resize", "512x512", "-filter", "Lanczos", f+"[0]", pathOut)
 		exec.Command(bin, args...).CombinedOutput()
@@ -234,13 +239,13 @@ func FFToWebmTGVideo(f string, isCustomEmoji bool) (string, error) {
 		rcargs := []string{}
 		switch rc {
 		case 0:
-			rcargs = []string{"-minrate", "50k", "-b:v", "350k", "-maxrate", "450k"}
+			rcargs = []string{"-minrate", "50k", "-b:v", "500k", "-maxrate", "650k"}
 		case 1:
-			rcargs = []string{"-minrate", "50k", "-b:v", "200k", "-maxrate", "300k"}
+			rcargs = []string{"-minrate", "50k", "-b:v", "350k", "-maxrate", "450k"}
 		case 2:
-			rcargs = []string{"-minrate", "20k", "-b:v", "100k", "-maxrate", "200k"}
+			rcargs = []string{"-minrate", "50k", "-b:v", "200k", "-maxrate", "300k"}
 		case 3:
-			rcargs = []string{"-minrate", "10k", "-b:v", "50k", "-maxrate", "100k"}
+			rcargs = []string{"-minrate", "20k", "-b:v", "100k", "-maxrate", "200k"}
 		}
 		args := append(baseargs, rcargs...)
 		args = append(args, []string{"-to", "00:00:03", "-an", "-y", pathOut}...)
@@ -260,7 +265,7 @@ func FFToWebmTGVideo(f string, isCustomEmoji bool) (string, error) {
 		if err != nil {
 			return pathOut, err
 		}
-		if stat.Size() > 255*KiB {
+		if stat.Size() > tgVideoStickerMaxSize {
 			continue
 		} else {
 			return pathOut, err

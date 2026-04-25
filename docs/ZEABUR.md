@@ -52,7 +52,19 @@ For production, mount persistent storage to:
 /webapp/data
 ```
 
-`/data` holds bot working data. `/webapp/data` holds temporary files served to Telegram WebApp users.
+`/data` holds short-lived bot working data while a user is importing, downloading, or creating a sticker set. It can contain downloaded LINE/Kakao ZIP files, extracted PNG/APNG files, converted WebP/WebM files, and temporary export ZIP files. Successful automatic imports remove their session folder immediately; a daily cleanup job removes any stale folders older than one day.
+
+`/webapp/data` holds temporary sticker files served to Telegram WebApp users when editing or exporting a Telegram sticker set. A daily cleanup job removes stale WebApp folders older than two days.
+
+Runtime tools such as ffmpeg, ImageMagick, nginx, Python, and helper scripts are installed into the Docker image. They do not need persistent storage and should not be mounted as volumes.
+
+MariaDB stores only metadata needed for search and management:
+
+- `line`: LINE/Kakao sticker ID/link to Telegram sticker-set ID/title mapping, plus the auto-emoji flag.
+- `stickers`: Telegram user ID to created/imported Telegram sticker-set ID/title mapping, plus timestamp.
+- `properties`: internal database version and maintenance state.
+
+The database does not store sticker image/video files.
 
 ## Deploy commands
 
