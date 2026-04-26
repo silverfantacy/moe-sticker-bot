@@ -6,7 +6,9 @@ This project should be deployed with the included Dockerfile, not Zeabur's plain
 
 - Project ID: `69ecd7792c891a4cefac0f28`
 - Environment ID: `69ecd779d34cd657ee34667d`
+- Service ID: `69ecdb6d2c891a4cefac1001`
 - Project name: `moe-sticker-bot`
+- Public URL: `https://moe-sticker-bot-zero.zeabur.app`
 
 ## Required variables
 
@@ -71,8 +73,17 @@ The database does not store sticker image/video files.
 Direct deploy from this working tree:
 
 ```bash
-npx zeabur@latest deploy --project-id 69ecd7792c891a4cefac0f28 --environment-id 69ecd779d34cd657ee34667d --name moe-sticker-bot --json
+npx zeabur@latest deploy \
+  --project-id 69ecd7792c891a4cefac0f28 \
+  --environment-id 69ecd779d34cd657ee34667d \
+  --service-id 69ecdb6d2c891a4cefac1001 \
+  --name moe-sticker-bot \
+  --json
 ```
+
+Always include `--service-id` when redeploying this existing service. Omitting it can create a duplicate service.
+
+This project is currently deployed directly from the local working tree. GitHub Actions are not required.
 
 Git deploy from the `main` branch can also be used after this commit is pushed to GitHub:
 
