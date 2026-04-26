@@ -129,6 +129,15 @@ See details on [web/webapp](https://github.com/star-39/moe-sticker-bot/tree/mast
 
 
 ## CHANGELOG
+v2.6.0-zeabur.1(20260426)
+* Add Docker-based Zeabur deployment with nginx WebApp serving and runtime media tools.
+* Add Zeabur deployment, environment, Volume, and MariaDB operations documentation.
+* Modernize Go dependencies and migrate the WebApp from Create React App to Vite and React 19.
+* Improve LINE/Kakao import progress messages by hiding internal IDs from user-facing output.
+* Improve sticker conversion quality by avoiding unnecessary static WebP recompression and trying higher-quality WebM first.
+* Register Telegram bot command menu on startup.
+* Clean successful import working directories immediately to reduce Volume usage.
+
 v2.5.0-RC1(20240531)
 * Support mix-typed sticker set.
 * You can add video to static set and vice versa.

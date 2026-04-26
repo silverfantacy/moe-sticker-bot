@@ -93,6 +93,18 @@ func sendChangelog(c tele.Context) error {
 	return c.Send(`
 Details: 詳細:
 https://github.com/star-39/moe-sticker-bot#changelog
+v2.6.0-zeabur.1(20260426)
+* Add Docker-based Zeabur deployment.
+* Modernize Go/WebApp dependencies.
+* Improve import progress messages and sticker conversion quality.
+* Register Telegram bot command menu on startup.
+* Clean successful import working directories immediately.
+* 新增 Zeabur Docker 部署支援。
+* 更新 Go/WebApp 依賴。
+* 改善匯入進度訊息與貼圖轉檔畫質。
+* 啟動時自動註冊 Telegram 指令選單。
+* 成功匯入後立即清理暫存資料夾。
+
 v2.5.0-RC1(20240528)
 * Support mix-typed sticker set.
 * You can add video to static set and vice versa.
