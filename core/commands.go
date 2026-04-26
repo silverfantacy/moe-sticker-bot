@@ -61,6 +61,25 @@ func cmdCommandList(c tele.Context) error {
 	return sendCommandList(c)
 }
 
+func initBotCommands() {
+	commands := []tele.Command{
+		{Text: "start", Description: "Show welcome message / 顯示開始說明"},
+		{Text: "import", Description: "Import LINE or Kakao stickers / 匯入貼圖"},
+		{Text: "download", Description: "Download stickers / 下載貼圖"},
+		{Text: "create", Description: "Create a sticker set / 建立貼圖包"},
+		{Text: "manage", Description: "Manage your sticker sets / 管理貼圖包"},
+		{Text: "search", Description: "Search imported sticker sets / 搜尋貼圖包"},
+		{Text: "help", Description: "Show help / 顯示說明"},
+		{Text: "privacy", Description: "Show privacy notice / 顯示隱私聲明"},
+		{Text: "faq", Description: "Show FAQ / 顯示常見問題"},
+	}
+	if err := b.SetCommands(commands); err != nil {
+		log.Warnln("Failed to set Telegram bot commands:", err)
+		return
+	}
+	log.Info("Telegram bot commands registered.")
+}
+
 func cmdSearch(c tele.Context) error {
 	if c.Chat().Type == tele.ChatGroup || c.Chat().Type == tele.ChatSuperGroup {
 		return cmdGroupSearch(c)

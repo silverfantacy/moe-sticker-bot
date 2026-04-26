@@ -62,6 +62,7 @@ func Init(conf ConfigTemplate) {
 	b.Handle(tele.OnPhoto, handleMessage)
 	b.Handle(tele.OnCallback, handleMessage, autoRespond, sanitizeCallback)
 
+	initBotCommands()
 	b.Start()
 }
 
