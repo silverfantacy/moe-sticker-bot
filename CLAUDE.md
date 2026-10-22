@@ -1,5 +1,22 @@
 # Moe Sticker Bot operations
 
+## Hecate / Openship production
+
+Production is deployed from silverfantacy/moe-sticker-bot, branch main, via .openship/compose.yaml. Pushes to main trigger Openship builds and deployment. Keep Dockerfile and Compose changes committed; do not replace production with an untracked local image.
+
+- Openship project: proj_jMHlx4M_TrnVx5PZ
+- Bot service: svc_LBNnOGNWDOiUtY9G
+- MariaDB service: svc_Qbjp6K9nzwT0zfyD
+- Public URL: https://moe-sticker-bot-zero.laplusda.com
+
+Preserve the existing MariaDB volume, service environment variables, and both bot data bind mounts. Secrets stay in Openship and must not be committed. The Dockerfile builds the Go bot and WebApp and provides its required runtime tools. Do not deploy with a plain Go buildpack.
+
+GitHub Actions are not used for deployment; Openship receives the GitHub push webhook.
+
+## Historical Zeabur deployment
+
+The following notes describe the previous Zeabur deployment, not the current production target.
+
 ## Zeabur deployment
 
 - Project ID: `69ecd7792c891a4cefac0f28`

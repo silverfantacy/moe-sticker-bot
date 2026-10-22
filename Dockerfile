@@ -1,4 +1,4 @@
-FROM node:24-bookworm-slim AS webapp
+FROM node:24.22.1-bookworm-slim AS webapp
 WORKDIR /src/web/webapp3
 COPY web/webapp3/package*.json ./
 RUN npm ci

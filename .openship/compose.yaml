@@ -1,0 +1,25 @@
+{
+  "services": {
+    "mariadb": {
+      "image": "mariadb:12",
+      "restart": "unless-stopped",
+      "volumes": [
+        "mariadb-data-clean:/var/lib/mysql"
+      ]
+    },
+    "bot": {
+      "build": {
+        "context": ".",
+        "dockerfile": "Dockerfile"
+      },
+      "ports": [
+        "8080"
+      ],
+      "restart": "unless-stopped",
+      "volumes": [
+        "/home/ubuntu/zeabur-migration/files/69ecdb6d2c891a4cefac1001/data:/data",
+        "/home/ubuntu/zeabur-migration/files/69ecdb6d2c891a4cefac1001/webapp/data:/webapp/data"
+      ]
+    }
+  }
+}
