@@ -491,3 +491,7 @@ You and all the users! ☺
 The GPL V3 License
 
 ![image](https://www.gnu.org/graphics/gplv3-with-text-136x68.png)
+
+## Hecate production deployment
+
+Production runs on Hecate through Openship. Pushes to the `main` branch build the repository Dockerfile using `.openship/compose.yaml` and deploy the bot. Configure secrets in Openship; keep the MariaDB volume and bot data mounts when changing deployment settings. The previous Zeabur deployment instructions are retained for reference.
