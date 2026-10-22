@@ -1,8 +1,10 @@
 package core
 
 import (
+	"context"
 	"database/sql"
 	"strings"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 	log "github.com/sirupsen/logrus"
@@ -103,10 +105,21 @@ func initDB(dbname string) error {
 }
 
 func verifyDB(dsn *mysql.Config, dbname string) error {
-	err := db.Ping()
-	if err != nil {
-		log.Errorln("Error connecting to mariadb:", err)
-		return err
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	var err error
+	for {
+		err = db.PingContext(ctx)
+		if err == nil {
+			break
+		}
+		log.Warn("Waiting for MariaDB to accept connections...")
+		select {
+		case <-ctx.Done():
+			log.Errorln("Error connecting to mariadb:", err)
+			return err
+		case <-time.After(2 * time.Second):
+		}
 	}
 
 	_, err = db.Exec("USE " + dbname)
